@@ -1,0 +1,35 @@
+<html lang="de">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" type="image/svg" href="logo.svg">
+        <meta charset="utf-8">
+        <title>Zeit Messung</title>
+    </head>
+    <body>
+        <header>
+            <nav>
+                <div id="navCenter">
+                    <a onmouseover="this.classList.add('navHover');" onmouseout="this.classList.remove('navHover');" class="navLink" href="/">View</a>
+                    <a onmouseover="this.classList.add('navHover');" onmouseout="this.classList.remove('navHover');" class="navLink" href="/export">Export</a>
+                    <a onmouseover="this.classList.add('navHover');" onmouseout="this.classList.remove('navHover');" class="navLink" href="#">Settings</a>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <label for="minCooldown">Min Cooldown(ms): </label><input type="number" id="minCooldown" onchange="minCooldownChanged();">
+            <hr>
+            <a href="/flash" style="display: block; margin: 10px;">Start OTA flash mode</a>
+            <a href="/closeFlash" style="display: block; margin: 10px;">Stop OTA flash mode</a>
+            <a href="/reboot" style="display: block; margin: 10px;">Reboot</a>
+        </main>
+        <script>
+            "useStrict";
+            const xhr = new XMLHttpRequest();
+
+            function minCooldownChanged(){
+                xhr.open("GET", "/settings?minCooldown=" + document.getElementById("minCooldown").value, true);
+                xhr.send();
+            }
+        </script>
+    </body>
+</html>

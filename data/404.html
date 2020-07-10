@@ -1,0 +1,68 @@
+const char INDEX_HTML[] PROGMEM = R"=====(
+    <!DOCTYPE html>
+<html lang="de">
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" type="image/svg" href="laser.svg">
+        <meta charset="utf-8">
+        <title>OneStepAhead</title>
+    </head>
+    <body>
+        <style>
+            body{
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            }
+
+            header{
+                width: 100%;
+                height: 10vh;
+            }
+
+            h1{
+                text-align: center;
+            }
+            footer{
+                height: 10vh;
+                top: 90vh;
+                text-align: center;
+            }
+            main{
+                margin-left: 20%;
+            }
+
+            #line{
+                width: 200px;
+                height: 1px;
+                position: absolute;
+                background: black;
+                transform-origin: left;
+                transform: rotate(30deg);
+            }
+            #line1{
+                width: 50%;
+                height: 1px;
+                position: absolute;
+                background: black;
+                transition: width 4s;
+            }
+        </style>
+        
+        <header>
+            <h1>The page you requested for does not exist</h1>
+        </header>
+        <main>
+            <div id="line"></div>
+            <div id="line1"></div>
+            <p style="margin-left: 10%;">Let me redirect you to the <b>start page</b></p>
+            <p style="margin-left: 15%;">If you belief this is an issue please contact us</p>
+        </main>
+        <script>
+            setTimeout(redirect, 4000);
+            function redirect(){
+                window.location = "/";
+            }
+            document.getElementById("line1").style.width = "0%";
+        </script>
+    </body>
+</html>
+)====="";
