@@ -12,6 +12,25 @@
 
 //Structure of com: 1 byte port, 1 byte type, 1 byte statusCode, 1 byte requestID, 1 - 249 bytes message(must be null terminated), 1 byte delimiter
 
+class Logger{
+    public:
+        Logger(int rx, int tx) : debug(new SoftwareSerial(rx, tx)){}
+        void println(const char* c){
+            debug->println(c);
+        }
+        void println(StringSumHelper string){
+            debug->println(string);
+        }
+        void print(const char* c){
+            debug->print(c);
+        }
+        void print(StringSumHelper string){
+            debug->print(string);
+        }
+    private:
+        SoftwareSerial* debug;
+};
+
 struct Com{
     Com(char com[], byte start, byte delimiter){
         message[254] = 0; //Safty null termination
@@ -37,7 +56,7 @@ struct Com{
     byte requestID;
     char message[255];
 
-    char* getComArr(char* comArr, SoftwareSerial* debug) {
+    char* getComArr(char* comArr, Logger* debug) {
         //char* comArr = new char[255]; old
         //comArr[0] = start_CAP; old
         comArr[0] = port;
@@ -51,10 +70,10 @@ struct Com{
         return comArr;
     }
 
-    void print(SoftwareSerial* debug) const{
+    /*void print(Logger* debug) const{
         if(debug)
             debug->printf("Debug Com: port: %i, type: %i, statusCode: %i, requestID: %i, message: %s\n", port, type, statusCode, requestID, message);
-    }
+    }*/
 };
 
 typedef void(*broadcastListener)(const Com&);
@@ -73,7 +92,7 @@ class SerialCom{
         bool setRequestListener(byte port, requestListener);//----------------------set the callback for incoming requests on this port Callback signature: char*(*)(const Com&)
         bool setBroadcastListener(byte port, broadcastListener);//                  set the callback for incoming broadcasts on this port Callback signature: void(*)(const Com&)
         bool removeListener(byte type, byte port);//--------------------------------remove the callback from this port and this type(note a port can have seperate callbacks on one port for requests and broadcasts)
-        void setDebug(SoftwareSerial&);//                                           parse this an instance of softwareserial for debug logging. To disable after activating, pass a nullptr
+        void setDebug(int rx, int tx);//                                           parse this an instance of softwareserial for debug logging. To disable after activating, pass a nullptr
         void setDebug(void*);
 
         int REQUEST_TIMEOUT = 1000;
@@ -102,7 +121,7 @@ class SerialCom{
         char m_buffer;
         int m_startCap = 0;
         void processCombuffer();
-        SoftwareSerial* m_debug;
+        Logger* m_debug;
         bool isComBufferValid();
         void processRequest(const Com);
         void processBroadcast(const Com);

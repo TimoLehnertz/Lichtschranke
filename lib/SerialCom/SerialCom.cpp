@@ -21,8 +21,8 @@ void SerialCom::begin(){
 
 }
 
-void SerialCom::setDebug(SoftwareSerial& debug){
-    m_debug = &debug;
+void SerialCom::setDebug(int rx, int tx){
+    m_debug = new Logger(rx, tx);
 }
 
 void SerialCom::setDebug(void * ptr){
@@ -105,7 +105,7 @@ void SerialCom::processRequest(const Com com){
     if(STACK)
         m_debug->println("processRequest begin");
     if(m_debug)
-       m_debug->print("received request: ");com.print(m_debug);
+       m_debug->print("received request: ");//com.print(m_debug);
     if(m_requestListeners[com.port]){
         char* response = (*m_requestListeners[com.port])(com);
         sendResponse(RESPONSE_PORT, OK, com.requestID, response);
@@ -137,7 +137,7 @@ void SerialCom::send(byte port, byte type, byte statusCode, byte requestID, cons
     char arr[255];
     com.getComArr(arr, m_debug);
     if(m_debug)
-        m_debug->print("sending: ");com.print(m_debug);
+        m_debug->print("sending: ");//com.print(m_debug);
     m_ComInterface->write(arr);
     if(STACK)
         m_debug->println("send end");
@@ -147,8 +147,9 @@ void SerialCom::send(const char* com){
     if(STACK)
         m_debug->println("send1 begin");
     m_ComInterface->write(com);
-    if(m_debug)
-        m_debug->printf("force sended this massage message: %s\n", com);
+    if(m_debug){
+        m_debug->print("force sended this massage message:");m_debug->println(com);
+    }
     if(STACK)
         m_debug->println("send1 end");
 }
