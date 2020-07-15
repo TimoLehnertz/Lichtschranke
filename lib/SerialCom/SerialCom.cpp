@@ -8,7 +8,7 @@
 //Request(sends response to port of requestID)
 //Response(response to request)
 
-SerialCom::SerialCom() : m_comSize(0), m_listenerSize(0), m_startCap(-1), m_debug(nullptr), m_sendQueSize(0){
+SerialCom::SerialCom(SerialInterface* comInterface) : m_ComInterface(comInterface), m_comSize(0), m_listenerSize(0), m_startCap(-1), m_debug(nullptr), m_sendQueSize(0){
     for (size_t i = 0; i < 255; i++)
     {
         m_broadcastListeners[i] = nullptr;
@@ -33,8 +33,8 @@ void SerialCom::setDebug(void * ptr){
 void SerialCom::handleComunication(){
     if(STACK)
         m_debug->println("handleComunication begin");
-    while(available()){
-        m_buffer = read();
+    while(m_ComInterface->available()){
+        m_buffer = m_ComInterface->read();
         if(m_buffer == delimiter){
             m_startCap = m_comSize;
             m_comBuffer[m_comSize] = m_buffer;
@@ -134,12 +134,11 @@ void SerialCom::send(byte port, byte type, byte statusCode, byte requestID, cons
     if(STACK)
         m_debug->println("send begin");
     Com com(port, type, statusCode, requestID, msg);
-    char* arr;
+    char arr[255];
     com.getComArr(arr, m_debug);
     if(m_debug)
         m_debug->print("sending: ");com.print(m_debug);
-    write(arr);
-    delete[] arr;
+    m_ComInterface->write(arr);
     if(STACK)
         m_debug->println("send end");
 }
@@ -147,7 +146,7 @@ void SerialCom::send(byte port, byte type, byte statusCode, byte requestID, cons
 void SerialCom::send(const char* com){
     if(STACK)
         m_debug->println("send1 begin");
-    write(com);
+    m_ComInterface->write(com);
     if(m_debug)
         m_debug->printf("force sended this massage message: %s\n", com);
     if(STACK)
@@ -253,16 +252,4 @@ bool SerialCom::isValidType(byte type){
 
 bool SerialCom::isValidPort(byte port){
     return port > 10;
-}
-
-bool SerialCom::available(){
-    return Serial.available();
-}
-
-void SerialCom::write(const char* input){
-    Serial.write(input);
-}
-
-char SerialCom::read(){
-    return Serial.read();
 }

@@ -1,8 +1,12 @@
 #ifndef SerialCom_h
 #define SerialCom_h
 
-#include <Arduino.h>
+#define SoftwareSerialDebug 1
+
+#include "SerialInterface.h"
+#if SoftwareSerialDebug == 1
 #include <SoftwareSerial.h>
+#endif
 
 #define DELIMITER '\n'
 
@@ -60,7 +64,7 @@ typedef void(*responseCallback)(const Com&);
 class SerialCom{
     public:
 
-        SerialCom();
+        SerialCom(SerialInterface* comInterface);
 
         void begin();//-------------------------------------------------------------aestetic
         void handleComunication();//                                                to put in loop
@@ -85,12 +89,10 @@ class SerialCom{
         
 
     private:
+        SerialInterface* m_ComInterface;
         void send(byte port, byte type, byte statusCode, byte requestinfo, const char* msg);
         void send(const char*);
         void sendQue();
-        void write(const char*);
-        char read();
-        bool available();
         char m_comBuffer[255];
         int m_comSize;
         broadcastListener m_broadcastListeners[255];

@@ -341,16 +341,11 @@ void WebServer::updateLiveXML(){
 //##########################################################################  Pages Start  ###################################################################
 
 void WebServer::htmlContent(){
-    if(m_debug)
-        m_debug->println("htmlConted got requested");
     server.send(200, "text/html", INDEX_HTML);
     // server.send(200, "text/html", "INDEX_HTML");
 }
 
 void WebServer::styleContent(){
-    if(m_debug){
-        m_debug->println("styleContent got requested");
-    }
     /*File css = SPIFFS.open("/style.css", "r");
     server.streamFile(css, "text/css");
     css.close();*/
@@ -359,16 +354,11 @@ void WebServer::styleContent(){
 }
 
 void WebServer::liveContent(){
-    if(m_debug){
-        m_debug->println("liveContent got requested");
-    }
     server.sendHeader("Access-Control-Allow-Origin", "*");
     server.send(200, "text/csv", m_liveCsv);
 }
 
 void WebServer::settings(){
-    if(m_debug)
-        m_debug->println("settingss got requested");
     if(server.args() > 0){
         server.send(200, "text/plain", "OK");
         if(server.hasArg(MIN_COOLDOWN_ARG)){

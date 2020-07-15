@@ -282,7 +282,6 @@ char* masterPortRequestCallback(const Com& com){
  * should undo all relevant changes made by the masterSetup()
 */
 void memberSetup(){
-  debug.println("Member");
   isMaster = false;
   webServer.end();
   //remove Listeners from master
@@ -304,7 +303,6 @@ void memberSetup(){
  * should undo all relevant changes made by the memberSetup()
 */
 void masterSetup(){
-  debug.println("MasterSetup");
   isMaster = true;
   webServer.begin();
   //remove Listeners from member
@@ -340,11 +338,9 @@ void setUniqueName(){
 }
 
 void setup(){
-  
   //begin functions
   Serial.begin(9600);
   debug.begin(9600);
-  Serial.println("Hallo Welt");
   debug.println("debug initialized");
   for (size_t i = 0; i < 5; i++)
   {
@@ -358,9 +354,7 @@ void setup(){
   webServer.setDebug(&debug);
   //setup
   setUniqueName();
-  Serial.println("1");
   sCom.sendRequest(MASTER_PORT, chipID, initRequestToMasterCallback);
-  Serial.println("100");
   ls.setTriggerCallback(processLocalTrigger);
 }
 
