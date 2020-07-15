@@ -1,7 +1,7 @@
 #ifndef SerialCom_h
 #define SerialCom_h
 
-#define SoftwareSerialDebug 1
+#define SoftwareSerialDebug 0
 
 #include "SerialInterface.h"
 #if SoftwareSerialDebug == 1
@@ -69,11 +69,20 @@ struct Com{
         comArr[length + 1] = 0;
         return comArr;
     }
+<<<<<<< HEAD
 
     /*void print(Logger* debug) const{
         if(debug)
             debug->printf("Debug Com: port: %i, type: %i, statusCode: %i, requestID: %i, message: %s\n", port, type, statusCode, requestID, message);
     }*/
+=======
+        #if SoftwareSerialDebug == 1
+    void print(SoftwareSerial* debug) const{
+        if(debug)
+            debug->printf("Debug Com: port: %i, type: %i, statusCode: %i, requestID: %i, message: %s\n", port, type, statusCode, requestID, message);
+    }
+    #endif
+>>>>>>> 8339cd77e42eb9328fd5e0a683b382c57f3d791d
 };
 
 typedef void(*broadcastListener)(const Com&);
@@ -121,7 +130,13 @@ class SerialCom{
         char m_buffer;
         int m_startCap = 0;
         void processCombuffer();
+<<<<<<< HEAD
         Logger* m_debug;
+=======
+        #if SoftwareSerialDebug == 1
+        SoftwareSerial* m_debug;
+        #endif
+>>>>>>> 8339cd77e42eb9328fd5e0a683b382c57f3d791d
         bool isComBufferValid();
         void processRequest(const Com);
         void processBroadcast(const Com);

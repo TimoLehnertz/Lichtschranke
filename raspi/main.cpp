@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-#include <Arduino.h>
-#include <SoftwareSerial.h>
-#include <Lichtschranke.h>
-#include <SerialCom.h>
-#include <utils.h>
-#include <WebServer.h>
-=======
-#include <SerialCom.h>
+
 #include <iostream>
 #include <wiringSerial.h>
 #include <wiringPi.h>
+#include <SerialCom.h>
 
 int main(){
 	setup();
@@ -40,38 +33,19 @@ uint32_t getSeconds(){
     return getNanos() / 1000000000;
 }
 
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 
 #define MASTER_PORT 11
 #define PING_PORT 12
 #define SYNC_PORT 13
 #define TRIGGER_PORT 14
 
-<<<<<<< HEAD
-void changeSetting(int, int);
-
-unsigned long now; //timing variable updated in loop
-=======
 
 
 unsigned long now; //timing variable updated in loop (delete me)dsfdfs
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 unsigned int triggers[100];//for master this array acts as a save for triggers. as A member this station saves unsend times in here
 int maxTriggerSize = 100;
 int triggerSize = 0;
 
-<<<<<<< HEAD
-//Libarys
-Lichtschranke ls;
-SerialCom sCom;
-WebServer webServer(triggers, &triggerSize, changeSetting);
-SoftwareSerial debug(4, 5);
-
-bool isMaster;
-int certifiedMembers[255];//Ports at the master for each specific member
-byte certifiedMembersSize;
-char chipID[10];
-=======
 
 
 class SInterface : public SerialInterface{
@@ -107,26 +81,14 @@ class SInterface : public SerialInterface{
 //Libarys
 SInterface si;
 SerialCom sCom(&si);
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 unsigned long pingStart;
 unsigned long pingEnd;
 bool exec;
 bool execRemain = false;
 bool isMasterMemberReliable = false;
 
-<<<<<<< HEAD
-
-void changeSetting(int settingID, int value){
-  if(settingID == webServer.MIN_COOLDOWN){
-    ls.setTimeout(value);
-  }
-}
-
-//##############################################################################  SyncPart Start  #######################################################################
-=======
 //##############################################################################  SyncPart Start  #######################################################################
 
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 void calcSync();
 bool sendSync();
 void syncCallback(const Com&);
@@ -144,15 +106,9 @@ int syncRequestID[3];
 long lastSync = 0;
 const int defaultOffset = 8;
 
-<<<<<<< HEAD
-/**
- * resets sync parameter and start syncronization
- */
-=======
 
  // resets sync parameter and start syncronization
  
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 void startSync(){
   isSyncronized = false;//telling not to send timing specific stuff from now on until sync is done
   syncAttemp = 0; //resettin current attempt to 0
@@ -160,15 +116,9 @@ void startSync(){
 }
 
 bool sendSync(){
-<<<<<<< HEAD
-  debug.println("start send Sync");
-  if(syncAttemp < syncMemorySize){
-    syncTimeMember[syncAttemp] = millis();
-=======
   log("start send Sync");
   if(syncAttemp < syncMemorySize){
     syncTimeMember[syncAttemp] = getMillis();
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
     char* tmp = new char[1];
     tmp[0] = 0;
     syncRequestID[syncAttemp] = sCom.sendRequest(PING_PORT, tmp, syncCallback);
@@ -180,11 +130,7 @@ bool sendSync(){
     calcSync();
     return false;
   }
-<<<<<<< HEAD
-  debug.println("end send Sync");
-=======
   log("end send Sync");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 }
 
 
@@ -193,11 +139,7 @@ void syncCallback(const Com& com){
   if(com.statusCode == sCom.OK && isNumeric(com.message))
   {
     syncTimeMaster[id] = atoi(com.message);
-<<<<<<< HEAD
-    syncTimeDuration[id] = millis() - syncTimeMember[id];
-=======
     syncTimeDuration[id] = getMillis() - syncTimeMember[id];
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
     //debug.println("received sync: ID: " + String(id) + ", syncTimeMember:" + String(syncTimeMember[id]) + ", syncTimeMaster: " + String(syncTimeMaster[id]) + ", syncTimeDuration: " + String(syncTimeDuration[id]));
   } else{
     syncAttemp--; //going one attempt back to restard this attemp
@@ -205,19 +147,6 @@ void syncCallback(const Com& com){
   sendSync(); //sending new sync(this only sends when current attemp isnt the last one)
 }
 
-<<<<<<< HEAD
-/**
- * uses the gathered information from the last sync calls to calculate the offset
- */
-void calcSync(){
-  byte quickestindex = getMinIndex(syncTimeDuration, syncMemorySize);
-  inaccuracity = quickestindex;
-  debug.println("Quickest sync attemp took " + String(syncTimeDuration[quickestindex]) + "ms");
-  offset = syncTimeMaster[quickestindex] - (syncTimeMember[quickestindex] + (syncTimeDuration[quickestindex] / 2)) + defaultOffset;
-  debug.println("Syncronized.. offset: " + String(offset));
-  isSyncronized = true;//telling to be syncronized again
-  lastSync = millis();
-=======
 
  // uses the gathered information from the last sync calls to calculate the offset
  
@@ -229,7 +158,6 @@ void calcSync(){
   log("Syncronized.. offset: " + String(offset));
   isSyncronized = true;//telling to be syncronized again
   lastSync = getMillis();
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 }
 
 unsigned long getMasterTime(unsigned long now){
@@ -243,17 +171,10 @@ unsigned long getMasterTime(unsigned long now){
 
 void memberPongCallback(const Com& com){
   if(com.statusCode == sCom.OK){
-<<<<<<< HEAD
-    pingEnd = millis();
-    debug.println("Ping time from Master: " + String(pingEnd - pingStart));
-  } else{
-    debug.println("ping timed out :(");
-=======
     pingEnd = getMillis();
     log("Ping time from Master: " + String(pingEnd - pingStart));
   } else{
     log("ping timed out :(");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   }
 }
 
@@ -273,11 +194,7 @@ void triggerRequestReturn(const Com& com);
 void sendTrigger(long atLocalTime);
 
 void processLocalTrigger(unsigned int now){
-<<<<<<< HEAD
-  debug.println("Local Trigger!!");
-=======
   log("Local Trigger!!");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   if(isMasterMemberReliable && isMaster){ //Master
     processIncomingTrigger(now);
   }
@@ -289,11 +206,7 @@ void processLocalTrigger(unsigned int now){
 }
 
 void sendTrigger(long atTime){
-<<<<<<< HEAD
-  debug.println("sending trigger: " + String(atTime));
-=======
   log("sending trigger: " + String(atTime));
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   char* nowChar = getNewCharFromInt(atTime);
   sCom.sendRequest(TRIGGER_PORT, nowChar, triggerRequestReturn);
 }
@@ -301,15 +214,9 @@ void sendTrigger(long atTime){
 void triggerRequestReturn(const Com& com){
   if(com.statusCode == sCom.OK){//trigger got definetly received
     long message = atoi(com.message);
-<<<<<<< HEAD
-    debug.println("trigger did arrive :)" + String(message));
-    int index = indexOf(message, triggers, triggerSize);
-    debug.println("index: " + String(index));
-=======
     log("trigger did arrive :)" + String(message));
     int index = indexOf(message, triggers, triggerSize);
     log("index: " + String(index));
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
     if(index > -1){
       if(index == triggerSize - 1){
         triggerSize--;
@@ -326,20 +233,12 @@ void triggerRequestReturn(const Com& com){
       triggers[index] = 0;
     }
   } else{//trigger did not arrived
-<<<<<<< HEAD
-    debug.println("trigger did not arrive :(");
-=======
     log("trigger did not arrive :(");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   }
 }
 
 void processIncomingTrigger(unsigned int atTime){
-<<<<<<< HEAD
-  debug.println("incoming Trigger!!:    " + String(atTime) + "ms    ");
-=======
   log("incoming Trigger!!:    " + String(atTime) + "ms    ");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   triggers[triggerSize] = atTime;
   if(triggerSize < maxTriggerSize - 1)
     triggerSize++;
@@ -348,11 +247,7 @@ void processIncomingTrigger(unsigned int atTime){
 
 void sendRemainingTriggers(){
   if(!isMaster && isMasterMemberReliable && ls.isNMsFromLastTrigegr(1500)){
-<<<<<<< HEAD
-    debug.println("sending remaining triggers! (" + String(triggerSize) + ")");
-=======
     log("sending remaining triggers! (" + String(triggerSize) + ")");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
     for (int i = 0; i < triggerSize; i++){
       if(triggers[i] > 0){
         sendTrigger(triggers[i]);
@@ -389,11 +284,7 @@ char* lsTriggerCallback(const Com& com){
 
 char* masterPingCallback(const Com& com){
   char* tmp = new char[10];
-<<<<<<< HEAD
-  sprintf(tmp, "%lu", millis());
-=======
   sprintf(tmp, "%lu", getMillis());
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   return tmp;
 }
 
@@ -405,11 +296,7 @@ char* masterPingCallback(const Com& com){
  */
 char* masterPortRequestCallback(const Com& com){
   certifiedMembers[certifiedMembersSize] = atoi(com.message); //certifieing this member
-<<<<<<< HEAD
-  debug.print("member \"");debug.print(certifiedMembers[certifiedMembersSize]);debug.println("\" joined :)");
-=======
   log("member \"");debug.print(certifiedMembers[certifiedMembersSize]);debug.println("\" joined :)");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   certifiedMembersSize++;
   char* out = new char[2];
   out[0] = 'H'; out[1] = 0;
@@ -425,10 +312,7 @@ char* masterPortRequestCallback(const Com& com){
  * should undo all relevant changes made by the masterSetup()
 */
 void memberSetup(){
-<<<<<<< HEAD
-=======
   log("Member");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   isMaster = false;
   webServer.end();
   //remove Listeners from master
@@ -437,11 +321,7 @@ void memberSetup(){
   sCom.removeListener(sCom.BROADCAST, TRIGGER_PORT);
   //setListeners from Member
   sCom.setBroadcastListener(SYNC_PORT, syncRequestFromMaster);
-<<<<<<< HEAD
-  pingStart = millis();
-=======
   pingStart = getMillis();
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   debug.println("I am Member");
   certifiedMembersSize = 0;
   isMasterMemberReliable = true;
@@ -454,10 +334,7 @@ void memberSetup(){
  * should undo all relevant changes made by the memberSetup()
 */
 void masterSetup(){
-<<<<<<< HEAD
-=======
   log("MasterSetup");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   isMaster = true;
   webServer.begin();
   //remove Listeners from member
@@ -466,11 +343,7 @@ void masterSetup(){
   sCom.setRequestListener(MASTER_PORT, masterPortRequestCallback);
   sCom.setRequestListener(PING_PORT, masterPingCallback);
   sCom.setRequestListener(TRIGGER_PORT, lsTriggerCallback);
-<<<<<<< HEAD
-  debug.println("I am Master");
-=======
   log("I am Master");
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
   certifiedMembersSize = 0;
   isMasterMemberReliable = true;
   sendSyncRequest();//cause sync on all members
@@ -490,34 +363,6 @@ void initRequestToMasterCallback(const Com& com){
   }
 }
 
-<<<<<<< HEAD
-/**
- * Sets the name variable to this chips ID
- */
-void setUniqueName(){
-  sprintf(chipID, "%i", ESP.getChipId());
-}
-
-void setup(){
-  //begin functions
-  Serial.begin(9600);
-  debug.begin(9600);
-  debug.println("debug initialized");
-  for (size_t i = 0; i < 5; i++)
-  {
-    debug.println("booting");
-  }
-  
-  ls.begin();
-  sCom.begin();
-  //debug
-  //sCom.setDebug(debug);
-  webServer.setDebug(&debug);
-  //setup
-  setUniqueName();
-  sCom.sendRequest(MASTER_PORT, chipID, initRequestToMasterCallback);
-  ls.setTriggerCallback(processLocalTrigger);
-=======
 
 void setup(){
   //begin functions
@@ -530,25 +375,16 @@ void setup(){
   sCom.begin();
   //setup
   sCom.sendRequest(MASTER_PORT, chipID, initRequestToMasterCallback);
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
 }
 
 //###############################################################################  Setup End  ##############################################################
 
 //###############################################################################  Loop Start ##############################################################
 
-<<<<<<< HEAD
-void loop(){
-  now = millis();
-  ls.handleTrigger();
-  if(now  % 120000 == 0 && !exec && !isMaster && isMasterMemberReliable){
-    pingStart = millis();
-=======
 bool loop(){
   now = getMillis();
   if(now  % 120000 == 0 && !exec && !isMaster && isMasterMemberReliable){
     pingStart = getMillis();
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
     sCom.sendRequest(PING_PORT, "ping", memberPongCallback);
     startSync();
     exec = true;
@@ -562,15 +398,7 @@ bool loop(){
     execRemain = false;
   
   sCom.handleComunication();
-<<<<<<< HEAD
-  // if(isMaster && isMasterMemberReliable)
-    webServer.handleClient();
-}
-
-//###############################################################################  Loop End  ##############################################################
-=======
   return true;
 }
 
 //###############################################################################  Loop End  ##############################################################
->>>>>>> ec3ed5cc8d5792cad1ab2a4c298988683230f12f
