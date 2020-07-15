@@ -21,8 +21,8 @@ void SerialCom::begin(){
 
 }
 
-void SerialCom::setDebug(int rx, int tx){
-    m_debug = new Logger(rx, tx);
+void SerialCom::setDebug(Logger* logger){
+    m_debug = logger;
 }
 
 void SerialCom::setDebug(void * ptr){

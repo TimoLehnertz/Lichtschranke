@@ -34,6 +34,24 @@ class SInterface : public SerialInterface{
         }
 };
 
+class sComLogger : Logger{
+    public:
+        void println(const char* c){
+            debug->println(c);
+        }
+        void println(StringSumHelper string){
+            debug->println(string);
+        }
+        void print(const char* c){
+            debug->print(c);
+        }
+        void print(StringSumHelper string){
+            debug->print(string);
+        }
+    private:
+        SoftwareSerial* debug = new SoftwareSerial(4, 5);
+};
+
 //Libarys
 SInterface si;
 Lichtschranke ls;
